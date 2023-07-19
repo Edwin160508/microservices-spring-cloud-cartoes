@@ -1,10 +1,9 @@
 package io.github.edwinlima.msavaliadorcredito.application;
 
-import io.github.edwinlima.msavaliadorcredito.domain.model.DadosAvaliacao;
-import io.github.edwinlima.msavaliadorcredito.domain.model.RetornoDadosAvaliacao;
-import io.github.edwinlima.msavaliadorcredito.domain.model.SituacaoCliente;
+import io.github.edwinlima.msavaliadorcredito.domain.model.*;
 import io.github.edwinlima.msavaliadorcredito.exceptions.DadosClienteNotFoundException;
 import io.github.edwinlima.msavaliadorcredito.exceptions.ErroComunicacaoMicroserviceException;
+import io.github.edwinlima.msavaliadorcredito.exceptions.ErroSolicitacaoCartaoException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +20,9 @@ public class AvaliadorCreditoResource {
     }
 
     @GetMapping(value = "situacao-cliente",params = "cpf")
-    public ResponseEntity consultaSituacaoCliente(@RequestParam("cpf") String cpf){
+    public ResponseEntity consultarSituacaoCliente(@RequestParam("cpf") String cpf){
         try {
-            SituacaoCliente situacaoCliente = service.consultaSituacaoCliente(cpf);
+            SituacaoCliente situacaoCliente = service.consultarSituacaoCliente(cpf);
             return ResponseEntity.ok(situacaoCliente);
         } catch (DadosClienteNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -42,6 +41,15 @@ public class AvaliadorCreditoResource {
             return ResponseEntity.notFound().build();
         } catch (ErroComunicacaoMicroserviceException e) {
             return ResponseEntity.status(HttpStatus.resolve(e.getStatus())).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("solicitacoes-cartao")
+    public ResponseEntity solicitarCartao(@RequestBody DadosSolicitacaoEmissaoCartao dados){
+        try{
+            return ResponseEntity.ok(service.solicitarEmissaoCartao(dados));
+        }catch (ErroSolicitacaoCartaoException e){
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }
