@@ -23,5 +23,5 @@ spring:
       fetch-registry: true
       registry-with-eureka: true
       service-url:
-        defaultZone: http://localhost:8761/eureka
+        defaultZone: http://ms-eureka-user:ameeeuu--krrss@localhost:8761/eureka
 
